@@ -1,0 +1,12 @@
+[Unit]
+Description=Flinkwork Docker DNS Agent
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/local/bin/docker-dns.py --scan /etc/named/Kflinkwork.docker.+157+31553
+LimitNOFILE=1024
+LimitNPROC=1024
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
