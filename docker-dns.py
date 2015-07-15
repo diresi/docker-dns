@@ -8,7 +8,7 @@ import json
 import subprocess
 import cStringIO
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 slog = logging.getLogger(__name__)
 
@@ -20,6 +20,9 @@ TTL=60
 # docker events example:
 # '2015-07-15T10:28:39.000000000+02:00 08dafd55da6b8a91dea188ee64ba762d8e763196bf13e90997a361a6236afbaf: (from flinkwork/backend) die\n'
 rx = re.compile(r'([^ ]+) ([0-9a-f]+): \(from (.+)\) (.+)')
+
+def norm_hostname(hostname):
+    return re.sub("[ _/]", "-", hostname)
 
 class SubprocessError(Exception):
     pass
@@ -68,6 +71,7 @@ class DNSUpdater(object):
     def update_host(self, hostname, ip):
         if not hostname:
             raise EmptyHostnameError()
+        hostname = norm_hostname(hostname)
         fqdn = '{}.{}'.format(hostname, self.domain)
 
         buf = cStringIO.StringIO()
