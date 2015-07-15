@@ -8,7 +8,7 @@ import json
 import subprocess
 import cStringIO
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 slog = logging.getLogger(__name__)
 
@@ -22,6 +22,9 @@ TTL=60
 rx = re.compile(r'([^ ]+) ([0-9a-f]+): \(from (.+)\) (.+)')
 
 class SubprocessError(Exception):
+    pass
+
+class EmptyHostnameError(Exception):
     pass
 
 def iter_docker_events():
@@ -63,6 +66,8 @@ class DNSUpdater(object):
         return self.zone.strip('.')
 
     def update_host(self, hostname, ip):
+        if not hostname:
+            raise EmptyHostnameError()
         fqdn = '{}.{}'.format(hostname, self.domain)
 
         buf = cStringIO.StringIO()
@@ -88,7 +93,7 @@ class DNSUpdater(object):
             slog.info('failed to fetch container data for event {!r}'.format((ts, cid, image, action)))
             return False
 
-        hostname = data['Config']['Hostname']
+        hostname = data['Name'].strip('/')
         ip = data['NetworkSettings']['IPAddress']
         self.update_host(hostname, ip)
         return True
