@@ -13,8 +13,8 @@ logging.basicConfig(level=logging.INFO)
 slog = logging.getLogger(__name__)
 
 # defaults
-NAME_SERVER='knecht.flinkwork.com'
-ZONE='flinkwork.docker.'
+NAME_SERVER='localhost'
+ZONE='named.zone.'
 TTL=60
 
 # docker events example:
